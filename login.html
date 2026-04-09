@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta property="og:title" content="HỆ THỐNG ĐỔI QUÀ">
+    <meta property="og:description" content="Trung tâm giải trí JP Bowling & Game">
+    <meta property="og:image" content="https://point-exchange-theta.vercel.app/img/gigamall_center.jpg">
+    <link rel="icon" href="img/Logo JP Bowling & Game (2).JPG">
+    <title>Đăng Nhập Hệ Thống Đổi Quà</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="gradient-bg min-h-screen flex items-center justify-center p-4">
+    <div class="w-full max-w-md">
+        <div class="bg-white rounded-2xl shadow-xl overflow-hidden">
+            <div class="p-8">
+                <div class="text-center mb-8">
+                    <h1 class="text-3xl font-bold text-gray-800">Đăng Nhập</h1>
+                    <p class="text-gray-600 mt-2">Hệ Thống Đổi Quà Jazzy Paradise</p>
+                </div>
+                
+                <form id="loginForm" class="space-y-6">
+                    <div class="space-y-4">
+                        <div>
+                            <label for="username" class="block text-sm font-medium text-gray-700 mb-1">Tài khoản</label>
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <i class="fas fa-user text-gray-400"></i>
+                                </div>
+                                <input type="text" id="username" name="username" required 
+                                    class="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg input-focus focus:outline-none focus:border-indigo-500 transition duration-200" 
+                                    placeholder="Nhập tài khoản đăng nhập">
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Mật khẩu</label>
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <i class="fas fa-lock text-gray-400"></i>
+                                </div>
+                                <input type="password" id="password" name="password" required 
+                                    class="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg input-focus focus:outline-none focus:border-indigo-500 transition duration-200" 
+                                    placeholder="••••••••">
+                                <button type="button" id="togglePassword" class="absolute inset-y-0 right-0 pr-3 flex items-center">
+                                    <i class="fas fa-eye text-gray-400 hover:text-indigo-500 cursor-pointer"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <button type="submit" 
+                                class="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-200">
+                            Đăng nhập
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for login success -->
+    <div id="successModal" class="fixed inset-0 z-50 flex items-center justify-center hidden">
+        <div class="absolute inset-0 bg-black opacity-50"></div>
+        <div class="bg-white rounded-lg shadow-xl max-w-sm w-full z-10 overflow-hidden">
+            <div class="p-6 text-center">
+                <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100 mb-4">
+                    <i class="fas fa-check text-green-600 text-xl"></i>
+                </div>
+                <h3 class="text-lg font-medium text-gray-900 mb-2" id="successTitle">Đăng nhập thành công!</h3>
+                <div class="mt-2 text-sm text-gray-500" id="successMessage">
+                    Đang điều hướng tới Trang chủ.
+                </div>
+                <div class="mt-5">
+                    <button type="button" id="closeModal" 
+                            class="inline-flex justify-center px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-200">
+                        Tiếp tục
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+// Initialize user accounts in localStorage if they don't exist
+function initializeAccounts() {
+    const accounts = localStorage.getItem('userAccounts');
+    let defaultAccounts = {
+        'user': {
+            username: 'user',
+            password: '123',
+            role: 'user',
+            name: 'User'
+        },
+        'admin': {
+            username: 'admin',
+            password: 'Abcd@1234',
+            role: 'admin',
+            name: 'Administrator'
+        },
+        'giamsat': {
+            username: 'giamsat',
+            password: '123456',
+            role: 'supervisor',
+            name: 'Giám sát'
+        }
+    };
+    
+    if (!accounts) {
+        // First time: create all accounts
+        localStorage.setItem('userAccounts', JSON.stringify(defaultAccounts));
+    } else {
+        // Check if we need to add new accounts
+        const existingAccounts = JSON.parse(accounts);
+        let needsUpdate = false;
+        
+        // Check if giamsat account exists
+        if (!existingAccounts['giamsat']) {
+            existingAccounts['giamsat'] = defaultAccounts['giamsat'];
+            needsUpdate = true;
+        }
+        
+        // Update localStorage if needed
+        if (needsUpdate) {
+            localStorage.setItem('userAccounts', JSON.stringify(existingAccounts));
+        }
+    }
+}
+
+// Check if user is already logged in
+function checkLoginStatus() {
+    const currentUser = localStorage.getItem('currentUser');
+    if (currentUser) {
+        // User is already logged in, redirect to main page
+        window.location.href = 'index.html';
+    }
+}
+
+// Authenticate user
+function authenticateUser(username, password) {
+    const accounts = JSON.parse(localStorage.getItem('userAccounts') || '{}');
+    console.log('Available accounts:', accounts);
+    console.log('Trying to login with:', username, password);
+    
+    const user = accounts[username];
+    console.log('Found user:', user);
+    
+    if (user && user.password === password) {
+        console.log('Login successful for:', username);
+        return {
+            success: true,
+            user: user
+        };
+    }
+    
+    console.log('Login failed for:', username);
+    return {
+        success: false,
+        message: 'Tên tài khoản hoặc mật khẩu không đúng!'
+    };
+}
+
+// Show error message
+function showError(message) {
+    const errorDiv = document.createElement('div');
+    errorDiv.className = 'bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mb-4';
+    errorDiv.innerHTML = `
+        <div class="flex items-center">
+            <i class="fas fa-exclamation-circle mr-2"></i>
+            <span>${message}</span>
+        </div>
+    `;
+    
+    const form = document.getElementById('loginForm');
+    form.insertBefore(errorDiv, form.firstChild);
+    
+    // Remove error message after 3 seconds
+    setTimeout(() => {
+        if (errorDiv.parentNode) {
+            errorDiv.remove();
+        }
+    }, 3000);
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize accounts and check login status
+    initializeAccounts();
+    checkLoginStatus();
+    
+    // Toggle password visibility
+    const togglePassword = document.getElementById('togglePassword');
+    const password = document.getElementById('password');
+    
+    togglePassword.addEventListener('click', function() {
+        const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
+        password.setAttribute('type', type);
+        this.innerHTML = type === 'password' ? '<i class="fas fa-eye text-gray-400 hover:text-indigo-500 cursor-pointer"></i>' : 
+                                              '<i class="fas fa-eye-slash text-gray-400 hover:text-indigo-500 cursor-pointer"></i>';
+    });
+    
+    // Form submission
+    const loginForm = document.getElementById('loginForm');
+    const successModal = document.getElementById('successModal');
+    const successTitle = document.getElementById('successTitle');
+    const successMessage = document.getElementById('successMessage');
+    
+    loginForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const username = document.getElementById('username').value.trim();
+        const password = document.getElementById('password').value;
+        
+        // Remove any existing error messages
+        const existingError = document.querySelector('.bg-red-100');
+        if (existingError) {
+            existingError.remove();
+        }
+        
+        // Simple validation
+        if (!username || !password) {
+            showError('Vui lòng nhập đầy đủ thông tin tài khoản và mật khẩu!');
+            loginForm.classList.add('shake');
+            setTimeout(() => loginForm.classList.remove('shake'), 500);
+            return;
+        }
+        
+        // Authenticate user
+        const authResult = authenticateUser(username, password);
+        
+        if (authResult.success) {
+            // Store current user in localStorage
+            localStorage.setItem('currentUser', JSON.stringify(authResult.user));
+            
+            // Set success message based on role
+            if (authResult.user.role === 'admin') {
+                successTitle.textContent = 'Quyền truy cập Quản trị viên';
+                successMessage.textContent = `Chào mừng ${authResult.user.name}! Truy cập thành công trang quản trị.`;
+            } else if (authResult.user.role === 'supervisor') {
+                successTitle.textContent = 'Quyền truy cập Giám sát';
+                successMessage.textContent = `Chào mừng ${authResult.user.name}! Truy cập thành công trang giám sát.`;
+            } else {
+                successTitle.textContent = 'Xin chào!';
+                successMessage.textContent = `Chào mừng ${authResult.user.name}! Truy cập hệ thống đổi phiếu Jazzy Paradise.`;
+            }
+
+            
+            // Show success modal
+            successModal.classList.remove('hidden');
+            
+            // Redirect to index.html after successful login
+            setTimeout(() => {
+                window.location.href = 'index.html';
+            }, 2000);
+        } else {
+            showError(authResult.message);
+            loginForm.classList.add('shake');
+            setTimeout(() => loginForm.classList.remove('shake'), 500);
+        }
+    });
+    
+    // Close modal
+    document.getElementById('closeModal').addEventListener('click', function() {
+        successModal.classList.add('hidden');
+        window.location.href = 'index.html';
+    });
+});
+    </script>
+    <script src="./script.js"></script>
+</body>
+</html>
