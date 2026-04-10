@@ -82,7 +82,7 @@
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                     <!-- Product 1 -->
                     <button class="btn btn-moto" type="button"
-                        onclick="generatePasscode('.btn-moto', 'passcodeMoto', 'moto', 'serialMoto')">
+                        onclick="scanBarCode('.btn-moto', 'typeMoto', 'moto')">
                         <div
                             class="product-card bg-white rounded-xl shadow-md overflow-hidden transition-all duration-300">
                             <div class="p-4">
@@ -109,7 +109,7 @@
                     </button>
                     <!-- Product 2 -->
                     <button class="btn btn-oto" type="button"
-                        onclick="generatePasscode('.btn-oto', 'passcodeCar', 'car', 'serialCar')">
+                        onclick="scanBarCode('.btn-oto', 'typeCar', 'car')">
                         <div
                             class="product-card bg-white rounded-xl shadow-md overflow-hidden transition-all duration-300">
                             <div class="p-4">
@@ -280,7 +280,7 @@
                         </p>
                         <p class="text-xs text-gray-500 italic">Giờ in: <span id="current-time"></span></p>
                         <p class="font-mono text-lg font-bold mt-2">ID:
-                            <input type="text" id="passcodeCar" placeholder="Đang chờ quét..."
+                            <input type="text" id="typeCar" placeholder="Đang chờ quét..."
                                 class="border-b-2 border-gray-300 focus:border-blue-500 outline-none px-2 py-1">
                         </p>
                     </div>
@@ -324,7 +324,7 @@
                         </p>
                         <p class="text-xs text-gray-500 italic">Giờ in: <span id="current-time"></span></p>
                         <p class="font-mono text-lg font-bold mt-2">ID:
-                            <input type="text" id="passcodeMoto" placeholder="Đang chờ quét..."
+                            <input type="text" id="typeMoto" placeholder="Đang chờ quét..."
                                 class="border-b-2 border-gray-300 focus:border-blue-500 outline-none px-2 py-1">
                         </p>
                     </div>
