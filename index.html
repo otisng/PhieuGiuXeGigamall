@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -16,13 +17,15 @@
     <script src="https://code.jquery.com/jquery-3.6.0.slim.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
+
 <body class="bg-gray-100 min-h-screen">
     <!-- Back to top button -->
     <a id="backtotop"></a>
 
     <div class="container mx-auto px-4 py-8">
         <!-- Welcome Message (Initially Hidden) -->
-        <div id="welcomeMessage" class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg mb-4 hidden">
+        <div id="welcomeMessage"
+            class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg mb-4 hidden">
             <div class="flex items-center">
                 <i class="fas fa-check-circle mr-2"></i>
                 <span id="welcomeText">Welcome back!</span>
@@ -41,23 +44,26 @@
                 </div>
                 <div class="flex items-center space-x-4">
                     <a href="#dailyReportSection">
-                    <button onclick="showDailyReport()" class="bg-white text-blue-600 rounded-lg px-4 py-2 font-bold flex items-center hover:bg-gray-50 transition-all duration-300">
-                        <i class="fas fa-chart-bar mr-2"></i>
-                        Báo cáo
-                    </button>
+                        <button onclick="showDailyReport()"
+                            class="bg-white text-blue-600 rounded-lg px-4 py-2 font-bold flex items-center hover:bg-gray-50 transition-all duration-300">
+                            <i class="fas fa-chart-bar mr-2"></i>
+                            Báo cáo
+                        </button>
                     </a>
                     <a href="#userManagementSection">
-                    <button onclick="showUserManagement()" id="userManagementBtn" class="bg-white text-green-600 rounded-lg px-4 py-2 font-bold flex items-center hover:bg-gray-50 transition-all duration-300 hidden">
-                        <i class="fas fa-users-cog mr-2"></i>
-                        Quản lý tài khoản
-                    </button>
+                        <button onclick="showUserManagement()" id="userManagementBtn"
+                            class="bg-white text-green-600 rounded-lg px-4 py-2 font-bold flex items-center hover:bg-gray-50 transition-all duration-300 hidden">
+                            <i class="fas fa-users-cog mr-2"></i>
+                            Quản lý tài khoản
+                        </button>
                     </a>
                     <div class="bg-white text-blue-600 rounded-full px-4 py-2 font-bold flex items-center">
-                        <i class="fas fa-coins mr-2"></i>
+                        <i class="fa-solid fa-user"></i>
                     </div>
                     <div class="flex items-center space-x-2">
                         <span id="userInfo" class="text-white text-sm font-medium"></span>
-                        <button onclick="logout()" class="bg-white text-red-600 rounded-lg px-3 py-2 font-bold flex items-center hover:bg-red-50 transition-all duration-300">
+                        <button onclick="logout()"
+                            class="bg-white text-red-600 rounded-lg px-3 py-2 font-bold flex items-center hover:bg-red-50 transition-all duration-300">
                             <i class="fas fa-sign-out-alt mr-2"></i>
                             Đăng xuất
                         </button>
@@ -75,13 +81,15 @@
                 </h2>
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                     <!-- Product 1 -->
-                     <button class="btn btn-moto" type="button" onclick="generatePasscode('.btn-moto', 'passcodeMoto', 'moto')">
-                        <div class="product-card bg-white rounded-xl shadow-md overflow-hidden transition-all duration-300">
+                    <button class="btn btn-moto" type="button"
+                        onclick="generatePasscode('.btn-moto', 'passcodeMoto', 'moto', 'serialMoto')">
+                        <div
+                            class="product-card bg-white rounded-xl shadow-md overflow-hidden transition-all duration-300">
                             <div class="p-4">
                                 <div class="flex justify-between items-start mb-3">
-                                    <h3 class="text-lg font-semibold text-gray-800">Card</h3>
+                                    <h3 class="text-lg font-semibold text-gray-800">Xe Máy</h3>
                                 </div>
-                                <img src="img/phieu-giu-xe-may.PNG" alt="Card" class="w-full h-40 object-contain mb-3">
+                                <img src="img/phieu-giu-xe-may.PNG" alt="Moto" class="w-full h-40 object-contain mb-3">
                                 <div class="flex justify-between items-center">
                                     <div class="text-gray-600">
                                         <span class="font-bold text-blue-600">4000</span> VNĐ
@@ -98,15 +106,17 @@
                                 </div>
                             </div>
                         </div>
-                     </button>
-                     <!-- Product 2 -->
-                     <button class="btn btn-oto" type="button" onclick="generatePasscode('.btn-oto', 'passcodeCar', 'car')">
-                        <div class="product-card bg-white rounded-xl shadow-md overflow-hidden transition-all duration-300">
+                    </button>
+                    <!-- Product 2 -->
+                    <button class="btn btn-oto" type="button"
+                        onclick="generatePasscode('.btn-oto', 'passcodeCar', 'car', 'serialCar')">
+                        <div
+                            class="product-card bg-white rounded-xl shadow-md overflow-hidden transition-all duration-300">
                             <div class="p-4">
                                 <div class="flex justify-between items-start mb-3">
-                                    <h3 class="text-lg font-semibold text-gray-800">Card</h3>
+                                    <h3 class="text-lg font-semibold text-gray-800">Ô tô</h3>
                                 </div>
-                                <img src="img/phieu-giu-xe-oto.PNG" alt="Card" class="w-full h-40 object-contain mb-3">
+                                <img src="img/phieu-giu-xe-oto.PNG" alt="Car" class="w-full h-40 object-contain mb-3">
                                 <div class="flex justify-between items-center">
                                     <div class="text-gray-600">
                                         <span class="font-bold text-blue-600">30000</span> VNĐ
@@ -114,7 +124,7 @@
                                 </div>
                             </div>
                         </div>
-                     </button>
+                    </button>
                 </div>
             </section>
 
@@ -128,8 +138,8 @@
                     <div>
                         <h3 class="text-lg font-medium text-gray-700 mb-4">Sản phẩm đã chọn</h3>
                         <div id="selectedItems" class="space-y-3">-->
-                            <!-- Items will be added here dynamically -->
-                            <!-- <p class="text-gray-500 italic">Không có sản phẩm được chọn</p>
+            <!-- Items will be added here dynamically -->
+            <!-- <p class="text-gray-500 italic">Không có sản phẩm được chọn</p>
                         </div>
                     </div>
                     
@@ -155,34 +165,39 @@
                     <h2 class="text-2xl font-bold text-gray-800">Báo Cáo Hàng Ngày</h2>
                     <p class="text-gray-600">Thống kê sản phẩm đã đổi trong ngày</p>
                 </div>
-                
+
                 <div class="mb-6">
                     <div class="flex justify-between items-center mb-4">
                         <div class="flex items-center space-x-4">
                             <h3 class="text-lg font-medium text-gray-700">Ngày: <span id="reportDate"></span></h3>
                             <div class="flex items-center space-x-2">
-                                <button onclick="changeReportDate('prev')" class="bg-blue-100 hover:bg-blue-200 text-blue-600 font-bold py-2 px-3 rounded-lg transition-all duration-300">
+                                <button onclick="changeReportDate('prev')"
+                                    class="bg-blue-100 hover:bg-blue-200 text-blue-600 font-bold py-2 px-3 rounded-lg transition-all duration-300">
                                     <i class="fas fa-chevron-left"></i>
                                 </button>
-                                <input type="date" id="reportDateInput" class="border border-gray-300 rounded-lg px-3 py-2 text-sm" onchange="selectReportDate()">
-                                <button onclick="changeReportDate('next')" class="bg-blue-100 hover:bg-blue-200 text-blue-600 font-bold py-2 px-3 rounded-lg transition-all duration-300">
+                                <input type="date" id="reportDateInput"
+                                    class="border border-gray-300 rounded-lg px-3 py-2 text-sm"
+                                    onchange="selectReportDate()">
+                                <button onclick="changeReportDate('next')"
+                                    class="bg-blue-100 hover:bg-blue-200 text-blue-600 font-bold py-2 px-3 rounded-lg transition-all duration-300">
                                     <i class="fas fa-chevron-right"></i>
                                 </button>
                             </div>
                         </div>
-                        <button onclick="hideDailyReport()" class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded-lg transition-all duration-300">
+                        <button onclick="hideDailyReport()"
+                            class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded-lg transition-all duration-300">
                             <i class="fas fa-times mr-2"></i> Đóng
                         </button>
                     </div>
-                    
+
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 mb-6">
                         <div class="bg-blue-50 rounded-lg p-4 text-center">
                             <div class="text-2xl font-bold text-blue-600" id="totalExchanges">0</div>
                             <div class="text-sm text-gray-600">Tổng giao dịch</div>
                         </div>
                         <div class="bg-green-50 rounded-lg p-4 text-center">
-                            <div class="text-2xl font-bold text-green-600" id="totalPoints">0</div>
-                            <div class="text-sm text-gray-600">Tổng phiếu</div>
+                            <div class="text-2xl font-bold text-green-600" id="totalPrice">0</div>
+                            <div class="text-sm text-gray-600">Tổng tiền</div>
                         </div>
                         <div class="bg-purple-50 rounded-lg p-4 text-center">
                             <div class="text-2xl font-bold text-purple-600" id="totalItems">0</div>
@@ -190,7 +205,7 @@
                         </div>
                     </div>
                 </div>
-                
+
                 <div class="mb-6">
                     <h3 class="text-lg font-medium text-gray-700 mb-4">Chi tiết sản phẩm</h3>
                     <div class="overflow-x-auto">
@@ -208,11 +223,12 @@
                         </table>
                     </div>
                 </div>
-                
+
                 <div class="mb-6">
                     <div class="flex justify-between items-center mb-4">
                         <h3 class="text-lg font-medium text-gray-700">Lịch sử giao dịch gần đây</h3>
-                        <button onclick="showDatePicker()" class="bg-blue-100 hover:bg-blue-200 text-blue-600 font-bold py-2 px-4 rounded-lg transition-all duration-300">
+                        <button onclick="showDatePicker()"
+                            class="bg-blue-100 hover:bg-blue-200 text-blue-600 font-bold py-2 px-4 rounded-lg transition-all duration-300">
                             <i class="fas fa-calendar-alt mr-2"></i> Chọn ngày
                         </button>
                     </div>
@@ -232,38 +248,43 @@
                         </table>
                     </div>
                 </div>
-                
+
                 <div class="text-center space-x-4">
-                    <button onclick="exportReportExcel()" class="excel-export-btn text-white font-bold py-2 px-6 rounded-lg">
+                    <button onclick="exportReportExcel()"
+                        class="excel-export-btn text-white font-bold py-2 px-6 rounded-lg">
                         <i class="fas fa-file-excel mr-2"></i> Xuất Excel
                     </button>
-                    <button onclick="exportReport()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-lg transition-all duration-300">
+                    <button onclick="exportReport()"
+                        class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-lg transition-all duration-300">
                         <i class="fas fa-download mr-2"></i> Xuất JSON
                     </button>
-                    <button onclick="showAllTimeStats()" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-6 rounded-lg transition-all duration-300">
+                    <button onclick="showAllTimeStats()"
+                        class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-6 rounded-lg transition-all duration-300">
                         <i class="fas fa-chart-pie mr-2"></i> Thống kê tổng quan
                     </button>
-                    <button onclick="clearDailyReport()" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-6 rounded-lg transition-all duration-300">
+                    <button onclick="clearDailyReport()"
+                        class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-6 rounded-lg transition-all duration-300">
                         <i class="fas fa-trash mr-2"></i> Xóa dữ liệu
                     </button>
                 </div>
             </section>
 
-            <!-- Receipt Section (Initially Hidden) -->            
-            <section id="receiptSectionCar" class="bg-white rounded-xl shadow-lg p-6 mt-6 border-t-4 border-blue-500 hidden">
+            <!-- Receipt Section (Initially Hidden) -->
+            <section id="receiptSectionCar"
+                class="bg-white rounded-xl shadow-lg p-6 mt-6 border-t-4 border-blue-500 hidden">
                 <div class="max-w-md mx-auto">
                     <div class="text-center border-b border-dashed border-gray-300 pb-4 mb-4">
                         <h3 class="text-xl font-black text-gray-800 tracking-widest uppercase">Phiếu Xe Ô Tô</h3>
+                        <p class="font-mono text-lg font-bold mt-2">
+                            STT: <span id="serialCar" class="text-blue-600"></span>
+                        </p>
                         <p class="text-xs text-gray-500 italic">Giờ in: <span id="current-time"></span></p>
-                        <p class="font-mono text-lg font-bold mt-2">ID: 
-                            <input type="text" 
-                            id="passcodeCar" 
-                            placeholder="Đang chờ quét..." 
-                            class="border-b-2 border-gray-300 focus:border-blue-500 outline-none px-2 py-1"
-                            >
+                        <p class="font-mono text-lg font-bold mt-2">ID:
+                            <input type="text" id="passcodeCar" placeholder="Đang chờ quét..."
+                                class="border-b-2 border-gray-300 focus:border-blue-500 outline-none px-2 py-1">
                         </p>
                     </div>
-            
+
                     <div class="flex items-center justify-between bg-gray-50 p-4 rounded-lg mb-4">
                         <div class="flex-1" id="receiptItems">
                             <p class="text-xs text-gray-600 leading-relaxed font-bold">Phiếu áp dụng: Xe ô tô</p>
@@ -274,7 +295,8 @@
                                 - Phiếu chỉ sử dụng cho bãi đậu xe tại TTTM GIGAMALL.</br>
                                 - Phiếu không có giá trị quy đổi thành tiền mặt.<br>
                                 - Vui lòng xuất trình phiếu kèm thẻ giữ xe tại chốt kiểm soát.<br>
-                                - Vui lòng thanh toán chi phí chênh lệch khi phí giữ xe vượt quá giá trị phiếu gửi xe.<br>
+                                - Vui lòng thanh toán chi phí chênh lệch khi phí giữ xe vượt quá giá trị phiếu gửi
+                                xe.<br>
                                 - Không áp dụng đồng thời với các chương trình giảm trừ phí giữ xe khác.<br>
                                 - Không áp dụng cộng gộp phiếu giữ xe để thanh toán.<br>
                                 - Ban quản lý có quyền từ chối bất kỳ phiếu nào xem là giả mạo hoặc không hợp lệ.<br>
@@ -284,27 +306,29 @@
                             <i class="fa-solid fa-car-side"></i>
                         </div>
                     </div>
-            
-                    <button onclick="printReceipt('car')" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl shadow-lg transition-all">
+
+                    <button onclick="printReceipt('car')"
+                        class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl shadow-lg transition-all">
                         <i class="fas fa-print mr-2"></i> IN PHIẾU Ô TÔ
                     </button>
                 </div>
             </section>
-            
-            <section id="receiptSectionMoto" class="bg-white rounded-xl shadow-lg p-6 mt-6 border-t-4 border-green-500 hidden">
+
+            <section id="receiptSectionMoto"
+                class="bg-white rounded-xl shadow-lg p-6 mt-6 border-t-4 border-green-500 hidden">
                 <div class="max-w-md mx-auto">
                     <div class="text-center border-b border-dashed border-gray-300 pb-4 mb-4">
                         <h3 class="text-xl font-black text-gray-800 tracking-widest uppercase">Phiếu Xe Máy</h3>
+                        <p class="font-mono text-lg font-bold mt-2">
+                            STT: <span id="serialMoto" class="text-blue-600"></span>
+                        </p>
                         <p class="text-xs text-gray-500 italic">Giờ in: <span id="current-time"></span></p>
-                        <p class="font-mono text-lg font-bold mt-2">ID: 
-                            <input type="text" 
-                            id="passcodeMoto" 
-                            placeholder="Đang chờ quét..." 
-                            class="border-b-2 border-gray-300 focus:border-blue-500 outline-none px-2 py-1"
-                            >
+                        <p class="font-mono text-lg font-bold mt-2">ID:
+                            <input type="text" id="passcodeMoto" placeholder="Đang chờ quét..."
+                                class="border-b-2 border-gray-300 focus:border-blue-500 outline-none px-2 py-1">
                         </p>
                     </div>
-            
+
                     <div class="flex items-center justify-between bg-gray-50 p-4 rounded-lg mb-4">
                         <div class="flex-1" id="receiptItems">
                             <p class="text-xs text-gray-600 leading-relaxed font-bold">Phiếu áp dụng: Xe máy</p>
@@ -315,7 +339,8 @@
                                 - Phiếu chỉ sử dụng cho bãi đậu xe tại TTTM GIGAMALL.</br>
                                 - Phiếu không có giá trị quy đổi thành tiền mặt.<br>
                                 - Vui lòng xuất trình phiếu kèm thẻ giữ xe tại chốt kiểm soát.<br>
-                                - Vui lòng thanh toán chi phí chênh lệch khi phí giữ xe vượt quá giá trị phiếu gửi xe.<br>
+                                - Vui lòng thanh toán chi phí chênh lệch khi phí giữ xe vượt quá giá trị phiếu gửi
+                                xe.<br>
                                 - Không áp dụng đồng thời với các chương trình giảm trừ phí giữ xe khác.<br>
                                 - Không áp dụng cộng gộp phiếu giữ xe để thanh toán.<br>
                                 - Ban quản lý có quyền từ chối bất kỳ phiếu nào xem là giả mạo hoặc không hợp lệ.<br>
@@ -325,83 +350,88 @@
                             <i class="fa-solid fa-motorcycle"></i>
                         </div>
                     </div>
-            
-                    <button onclick="printReceipt('moto')" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-xl shadow-lg transition-all">
+
+                    <button onclick="printReceipt('moto')"
+                        class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-xl shadow-lg transition-all">
                         <i class="fas fa-print mr-2"></i> IN PHIẾU XE MÁY
                     </button>
                 </div>
             </section>
 
             <!-- User Management Section (Initially Hidden) -->
-            <section id="userManagementSection" class="bg-white rounded-xl shadow-lg p-6 hidden">
+            <section id="userManagement" class="bg-white rounded-xl shadow-lg p-6 hidden">
                 <div class="text-center mb-6">
                     <i class="fas fa-users-cog text-5xl text-green-500 mb-4"></i>
                     <h2 class="text-2xl font-bold text-gray-800">Quản Lý Tài Khoản</h2>
                     <p class="text-gray-600">Tạo và quản lý tài khoản người dùng</p>
                 </div>
-                
+
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
                     <!-- Create New User Form -->
                     <div class="bg-gray-50 rounded-lg p-6">
                         <h3 class="text-lg font-medium text-gray-700 mb-4 flex items-center">
                             <i class="fas fa-user-plus mr-2"></i> Tạo tài khoản mới
                         </h3>
-                        
+
                         <form id="createUserForm" class="space-y-4">
                             <div>
-                                <label for="newUsername" class="block text-sm font-medium text-gray-700 mb-1">Tên đăng nhập</label>
-                                <input type="text" id="newUsername" required 
+                                <label for="newUsername" class="block text-sm font-medium text-gray-700 mb-1">Tên đăng
+                                    nhập</label>
+                                <input type="text" id="newUsername" required
                                     class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 transition duration-200"
                                     placeholder="Nhập tên đăng nhập">
                             </div>
-                            
+
                             <div>
-                                <label for="newPassword" class="block text-sm font-medium text-gray-700 mb-1">Mật khẩu</label>
-                                <input type="password" id="newPassword" required 
+                                <label for="newPassword" class="block text-sm font-medium text-gray-700 mb-1">Mật
+                                    khẩu</label>
+                                <input type="password" id="newPassword" required
                                     class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 transition duration-200"
                                     placeholder="Nhập mật khẩu">
                             </div>
-                            
+
                             <div>
-                                <label for="newName" class="block text-sm font-medium text-gray-700 mb-1">Tên hiển thị</label>
-                                <input type="text" id="newName" required 
+                                <label for="newName" class="block text-sm font-medium text-gray-700 mb-1">Tên hiển
+                                    thị</label>
+                                <input type="text" id="newName" required
                                     class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 transition duration-200"
                                     placeholder="Nhập tên hiển thị">
                             </div>
-                            
+
                             <div>
-                                <label for="newRole" class="block text-sm font-medium text-gray-700 mb-1">Phân quyền</label>
-                                <select id="newRole" required 
+                                <label for="newRole" class="block text-sm font-medium text-gray-700 mb-1">Phân
+                                    quyền</label>
+                                <select id="newRole" required
                                     class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 transition duration-200">
                                     <option value="user">Người dùng</option>
                                     <option value="user">Giám sát viên</option>
                                     <option value="admin">Quản trị viên</option>
                                 </select>
                             </div>
-                            
-                            <button type="submit" 
+
+                            <button type="submit"
                                 class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg transition-all duration-300">
                                 <i class="fas fa-save mr-2"></i> Tạo tài khoản
                             </button>
-                        </br>
+                            </br>
                             <div class="text-center space-x-4">
-                                <button type="button" onclick="resetAccounts()" 
-                                        class="text-sm text-blue-500 hover:text-red-600 transition duration-200">
+                                <button type="button" onclick="resetAccounts()"
+                                    class="text-sm text-blue-500 hover:text-red-600 transition duration-200">
                                     Reset tài khoản
                                 </button>
-                                <button type="button" onclick="debugAccounts()" 
-                                        class="text-sm text-blue-500 hover:text-red-600 transition duration-200">
+                                <button type="button" onclick="debugAccounts()"
+                                    class="text-sm text-blue-500 hover:text-red-600 transition duration-200">
                                     Kiểm tra tài khoản
                                 </button>
                             </div>
                         </form>
                     </div>
-                    
+
                     <!-- User List -->
                     <div class="bg-gray-50 rounded-lg p-6">
                         <h3 class="text-lg font-medium text-gray-700 mb-4 flex items-center">
                             <i class="fas fa-list mr-2"></i> Danh sách tài khoản
-                        </h3> 
+                        </h3>
                         <div class="overflow-x-auto">
                             <table class="w-full bg-white rounded-lg">
                                 <thead class="bg-gray-100">
@@ -415,12 +445,12 @@
                                 <tbody id="userListBody">
                                 </tbody>
                             </table>
-                        </div> 
+                        </div>
                     </div>
                 </div>
-                
+
                 <div class="text-center mt-6">
-                    <button onclick="hideUserManagement()" 
+                    <button onclick="hideUserManagement()"
                         class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-6 rounded-lg transition-all duration-300">
                         <i class="fas fa-times mr-2"></i> Đóng
                     </button>
@@ -431,14 +461,16 @@
     <footer class="bg-white">
         <div class="mt-16 border-t border-gray-100 pt-8">
             <p class="text-center text-xs/relaxed text-gray-500">
-              © <a href="https://gigamall.com.vn/" target="_blank">Gigamall Việt Nam</a> 2026. All rights reserved.
-              <br />
-              Designed by
-              <a href="https://otisng.github.io/Portforlio/" target="_blank" class="text-gray-700 underline transition hover:text-gray-700/75">Nexus</a>
+                © <a href="https://gigamall.com.vn/" target="_blank">Gigamall Việt Nam</a> 2026. All rights reserved.
+                <br />
+                Designed by
+                <a href="https://otisng.github.io/Portforlio/" target="_blank"
+                    class="text-gray-700 underline transition hover:text-gray-700/75">Nexus</a>
             </p>
         </div>
     </footer>
 
-<script src="./script.js"></script>
+    <script src="./script.js"></script>
 </body>
+
 </html>

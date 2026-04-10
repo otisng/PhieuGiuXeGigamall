@@ -120,215 +120,131 @@ window.onload = function () {
     document.querySelector('.preloader').style.display = 'none';
 }
 
-// Product point values
-const products = {
-    card: { name: "Card", points: 100 },
-    phinhxanh: { name: "Phỉnh Xanh", points: 50 },
-    phinhdo: { name: "Phỉnh Đỏ", points: 50 },
-    coin: { name: "80 Phiếu", points: 1 },
-    gift2: { name: "Quà hạng 2", points: 800 },
-    gift3: { name: "Quà hạng 3", points: 400 }
-};
-
-// Global transaction storage
-let allTransactions = [];
-let currentReportDate = getCurrentDate();
-
-// Initialize transaction storage from localStorage
-function initializeTransactionStorage() {
-    const savedTransactions = localStorage.getItem('allTransactions');
-    if (savedTransactions) {
-        try {
-            allTransactions = JSON.parse(savedTransactions);
-        } catch (error) {
-            console.error('Error parsing saved transactions:', error);
-            allTransactions = [];
-        }
-    }
-}
-
-// Save all transactions to localStorage
-function saveAllTransactions() {
-    localStorage.setItem('allTransactions', JSON.stringify(allTransactions));
-}
-
-// Get current date in YYYY-MM-DD format
-function getCurrentDate() {
-    const now = new Date();
-    return now.toISOString().split('T')[0];
-}
-
-// Get transactions for a specific date
-function getTransactionsByDate(date) {
-    return allTransactions.filter(transaction => {
-        const transactionDate = transaction.timestamp.split('T')[0];
-        return transactionDate === date;
-    });
-}
-
-// Calculate totals for a specific date
-function calculateTotalsForDate(date) {
-    const transactions = getTransactionsByDate(date);
-    const totals = {
-        totalExchanges: transactions.length,
-        totalPoints: 0,
-        totalItems: 0,
-        products: {}
-    };
-
-    transactions.forEach(transaction => {
-        totals.totalPoints += transaction.totalPoints;
-
-        for (const [productId, quantity] of Object.entries(transaction.items)) {
-            if (quantity > 0) {
-                const product = products[productId];
-                if (!totals.products[productId]) {
-                    totals.products[productId] = {
-                        name: product.name,
-                        quantity: 0,
-                        points: 0
-                    };
-                }
-                totals.products[productId].quantity += quantity;
-                totals.products[productId].points += quantity * product.points;
-                totals.totalItems += quantity;
-            }
-        }
-    });
-
-    return totals;
-}
-
-// Add transaction to storage
-function addTransaction(transactionData) {
-    const user = checkAuthentication();
-    if (user) {
-        transactionData.user = user.name;
-        transactionData.userRole = user.role;
-    }
-
-    allTransactions.push(transactionData);
-    saveAllTransactions();
-}
-
-// User's current points balance
-// let userPoints = 10000;
+// User's current price balance
+// let userprice = 10000;
 
 // Adjust quantity for a product
-function adjustQuantity(productId, change) {
-    const input = document.getElementById(`${productId}-qty`);
-    let newValue = parseInt(input.value) + change;
-    if (newValue < 0) newValue = 0;
-    input.value = newValue;
-    updateSummary();
-}
+// function adjustQuantity(productId, change) {
+//     const input = document.getElementById(`${productId}-qty`);
+//     let newValue = parseInt(input.value) + change;
+//     if (newValue < 0) newValue = 0;
+//     input.value = newValue;
+//     updateSummary();
+// }
 
 // Update the summary section
-function updateSummary() {
-    let subtotal = 0;
-    let hasItems = false;
-    const selectedItemsContainer = document.getElementById('selectedItems');
+// function updateSummary() {
+//     let subtotal = 0;
+//     let hasItems = false;
+//     const selectedItemsContainer = document.getElementById('selectedItems');
 
-    // Clear previous items
-    selectedItemsContainer.innerHTML = '';
+//     // Clear previous items
+//     selectedItemsContainer.innerHTML = '';
 
-    // Calculate subtotal and build selected items list
-    for (const [productId, product] of Object.entries(products)) {
-        const quantity = parseInt(document.getElementById(`${productId}-qty`).value);
-        if (quantity > 0) {
-            hasItems = true;
-            const itemPoints = quantity * product.points;
-            subtotal += itemPoints;
+//     // Calculate subtotal and build selected items list
+//     for (const [productId, product] of Object.entries(products)) {
+//         const quantity = parseInt(document.getElementById(`${productId}-qty`).value);
+//         if (quantity > 0) {
+//             hasItems = true;
+//             const itemprice = quantity * product.price;
+//             subtotal += itemprice;
 
-            // Add item to the selected items list
-            const itemElement = document.createElement('div');
-            itemElement.className = 'flex justify-between items-center bg-gray-50 p-3 rounded-lg';
-            itemElement.innerHTML = `
-                <div>
-                    <span class="font-medium">${product.name}</span>
-                    <span class="text-sm text-gray-500 block">${product.points} Phiếu × ${quantity}</span>
-                </div>
-                <span class="font-medium"> = ${itemPoints} Phiếu</span>
-            `;
-            selectedItemsContainer.appendChild(itemElement);
-        }
-    }
+//             // Add item to the selected items list
+//             const itemElement = document.createElement('div');
+//             itemElement.className = 'flex justify-between items-center bg-gray-50 p-3 rounded-lg';
+//             itemElement.innerHTML = `
+//                 <div>
+//                     <span class="font-medium">${product.name}</span>
+//                     <span class="text-sm text-gray-500 block">${product.price} Phiếu × ${quantity}</span>
+//                 </div>
+//                 <span class="font-medium"> = ${itemprice} Phiếu</span>
+//             `;
+//             selectedItemsContainer.appendChild(itemElement);
+//         }
+//     }
 
-    // If no items selected, show placeholder
-    if (!hasItems) {
-        selectedItemsContainer.innerHTML = '<p class="text-gray-500 italic">Không có sản phẩm được chọn</p>';
-    }
+//     // If no items selected, show placeholder
+//     if (!hasItems) {
+//         selectedItemsContainer.innerHTML = '<p class="text-gray-500 italic">Không có sản phẩm được chọn</p>';
+//     }
 
-    // Update summary values
-    document.getElementById('subtotal').textContent = `${subtotal.toLocaleString()} Phiếu`;
+//     // Update summary values
+//     document.getElementById('subtotal').textContent = `${subtotal.toLocaleString()} Phiếu`;
 
-}
+// }
 
-// Process the points exchange
-function processExchange() {
-    const subtotal = parseInt(document.getElementById('subtotal').textContent.replace(/,| pts/g, ''));
-    // const remaining = userPoints - subtotal;
+// Process the price exchange
+// function processExchange() {
+//     const subtotal = parseInt(document.getElementById('subtotal').textContent.replace(/,| pts/g, ''));
+//     // const remaining = userprice - subtotal;
 
-    if (subtotal > 0) {
-        // Collect exchange data
-        const exchangeData = {
-            timestamp: new Date().toISOString(),
-            totalPoints: subtotal,
-            items: {}
-        };
+//     if (subtotal > 0) {
+//         // Collect exchange data
+//         const exchangeData = {
+//             timestamp: new Date().toISOString(),
+//             totalPrice: subtotal,
+//             items: {}
+//         };
 
-        // Build receipt and collect items
-        const receiptItemsContainer = document.getElementById('receiptItems');
-        receiptItemsContainer.innerHTML = '';
+//         // Build receipt and collect items
+//         const receiptItemsContainer = document.getElementById('receiptItems');
+//         receiptItemsContainer.innerHTML = '';
 
-        for (const [productId, product] of Object.entries(products)) {
-            const quantity = parseInt(document.getElementById(`${productId}-qty`).value);
-            if (quantity > 0) {
-                exchangeData.items[productId] = quantity;
+//         for (const [productId, product] of Object.entries(products)) {
+//             const quantity = parseInt(document.getElementById(`${productId}-qty`).value);
+//             if (quantity > 0) {
+//                 exchangeData.items[productId] = quantity;
 
-                const itemElement = document.createElement('div');
-                itemElement.className = 'flex justify-between';
-                itemElement.innerHTML = `
-                    <span>${product.name} × ${quantity}</span>
-                    <span> = ${(quantity * product.points).toLocaleString()} Phiếu</span>
-                `;
-                receiptItemsContainer.appendChild(itemElement);
-            }
-        }
+//                 const itemElement = document.createElement('div');
+//                 itemElement.className = 'flex justify-between';
+//                 itemElement.innerHTML = `
+//                     <span>${product.name} × ${quantity}</span>
+//                     <span> = ${(quantity * product.price).toLocaleString()} Phiếu</span>
+//                 `;
+//                 receiptItemsContainer.appendChild(itemElement);
+//             }
+//         }
 
-        // Add to transaction storage
-        addTransaction(exchangeData);
+//         // Add to transaction storage
+//         addTransaction(exchangeData);
 
-        // Update receipt totals
-        document.getElementById('receiptTotal').textContent = `${subtotal.toLocaleString()} Phiếu`;
-        // document.getElementById('receiptBalance').textContent = `${remaining.toLocaleString()} pts`;
+//         // Update receipt totals
+//         document.getElementById('receiptTotal').textContent = `${subtotal.toLocaleString()} Phiếu`;
+//         // document.getElementById('receiptBalance').textContent = `${remaining.toLocaleString()} pts`;
 
-        // Show receipt and hide summary
-        // document.getElementById('receiptSection').classList.remove('hidden');
-        // document.querySelector('section.bg-white.rounded-xl.shadow-lg.p-6.mb-8').classList.add('hidden');
+//         // Show receipt and hide summary
+//         // document.getElementById('receiptSection').classList.remove('hidden');
+//         // document.querySelector('section.bg-white.rounded-xl.shadow-lg.p-6.mb-8').classList.add('hidden');
 
-        // Update points display in header
-        // document.getElementById('totalPoints').textContent = remaining.toLocaleString();
-    }
-}
+//         // Update price display in header
+//         // document.getElementById('totalPrice').textContent = remaining.toLocaleString();
+//     }
+// }
 
 // Print the exchange receipt
 function printReceipt(type) {
+    
     // 1. Xác định ID dựa trên loại phương tiện
     const sectionId = type === 'car' ? 'receiptSectionCar' : 'receiptSectionMoto';
     const passcodeId = type === 'car' ? 'passcodeCar' : 'passcodeMoto';
     const iconClass = type === 'car' ? 'fa-car-side' : 'fa-motorcycle';
+    const serialId = type === 'car' ? 'serialCar' : 'serialMoto';
     
-    // const prefix = type === 'car' ? 'CF' : 'MF';
+    const prefix = type === 'car' ? 'GC' : 'GM';
 
     // 2. Lấy dữ liệu từ giao diện
     const sectionElement = document.getElementById(sectionId);
+    const serialElement = document.getElementById(serialId);
     const passcode = document.getElementById(passcodeId).value;
 
     // Lấy danh sách sản phẩm (nếu có id receiptItems bên trong section đó)
     const itemsHtml = sectionElement.querySelector('#receiptItems') ?
         sectionElement.querySelector('#receiptItems').innerHTML :
         '<p>Dịch vụ giữ xe miễn phí</p>';
+
+    
+    saveTransaction(passcode, type, 4000);
+    
 
     // 3. Tạo cửa sổ in
     const printWindow = window.open('', '', 'width=800,height=600');
@@ -382,6 +298,7 @@ function printReceipt(type) {
                         </div>
         
                         <div class="details">
+                            <div><b>Số phiếu:</b> ${prefix}-${serialElement.textContent}</div>
                             <div><b>Thời gian:</b> ${document.getElementById('current-time').textContent}</div>
                             <div><b>Mã số:</b> <span class="passcode">${passcode}</span></div>
                             <hr style="border: 0.5px dashed #ccc">
@@ -412,6 +329,7 @@ function printReceipt(type) {
  * @param {string} displayId - ID của phần tử hiển thị kết quả
  */
 function generatePasscode(btnSelector, displayId, type) {
+
     const btn = document.querySelector(btnSelector);
     const inputElement = document.getElementById(displayId);
 
@@ -430,6 +348,7 @@ function generatePasscode(btnSelector, displayId, type) {
             }
         }
     });
+
 
     // 1. Hiệu ứng nút bấm (Thêm và tự động xóa sau 200ms)
     btn.classList.add('btn-clicked');
@@ -461,20 +380,21 @@ function generatePasscode(btnSelector, displayId, type) {
 }
 
 // Reset the exchange form
-function resetExchange() {
-    // Reset all quantities to 0
-    for (const productId of Object.keys(products)) {
-        document.getElementById(`${productId}-qty`).value = 0;
-    }
+// function resetExchange() {
+//     // Reset all quantities to 0
+//     for (const productId of Object.keys(products)) {
+//         document.getElementById(`${productId}-qty`).value = 0;
+//     }
 
-    // Update summary
-    updateSummary();
+//     // Update summary
+//     updateSummary();
 
-    // Show summary and hide other sections
-    document.getElementById('receiptSection').classList.add('hidden');
-    document.getElementById('dailyReportSection').classList.add('hidden');
-    document.querySelector('section.bg-white.rounded-xl.shadow-lg.p-6.mb-8').classList.remove('hidden');
-}
+//     // Show summary and hide other sections
+//     document.getElementById('receiptSectionMoto').classList.add('hidden');
+//     document.getElementById('receiptSectionCar').classList.add('hidden');
+//     document.getElementById('dailyReportSection').classList.add('hidden');
+//     // document.querySelector('section.bg-white.rounded-xl.shadow-lg.p-6.mb-8').classList.remove('hidden');
+// }
 
 
 // Initialize event listeners for direct input changes
@@ -517,6 +437,134 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 
+// Product price values
+const products = {
+    moto: { name: "Xe Máy", price: 4000 },
+    oto: { name: "Xe Ô tô", price: 30000 },
+};
+
+// Hàm lấy danh sách giao dịch cũ từ localStorage hoặc tạo mảng mới nếu chưa có
+function getTransactions() {
+    const data = localStorage.getItem('transactionHistory');
+    return data ? JSON.parse(data) : [];
+}
+
+// Hàm lưu giao dịch mới
+function saveTransaction(scannedValue, vehicleType, price) {
+    const transactions = getTransactions();
+    const serialId = type === 'car' ? 'serialCar' : 'serialMoto';
+    const prefix = type === 'car' ? 'GC' : 'GM';
+
+    const serialElement = document.getElementById(serialId);
+    
+    // 1. Tạo số thứ tự GP-xxxxx
+    let currentCount = localStorage.getItem('lastSerial') ? parseInt(localStorage.getItem('lastSerial')) : 1;
+    const formattedSerial = prefix + "-" + currentCount.toString().padStart(9, '0');
+
+
+    document.getElementById(serialId).innerText = formattedSerial;
+    serialElement.innerText = formattedSerial;
+    // Và sau khi tăng currentCount++, hãy lưu lại:
+    currentCount += 1;
+    localStorage.setItem('lastSerial', currentCount);
+    
+
+    // 2. Tạo đối tượng giao dịch
+    const newTransaction = {
+        sophieu: formattedSerial,
+        date: new Date().toLocaleString('vi-VN'), // Lưu ngày giờ Việt Nam
+        type: vehicleType, // 'Moto' hoặc 'Car'
+        code: scannedValue,
+        price: price
+    };
+    // 3. Thêm vào mảng và lưu lại vào localStorage
+    transactions.push(newTransaction);
+    localStorage.setItem('transactionHistory', JSON.stringify(transactions));
+
+    console.log("Đã lưu giao dịch:", newTransaction);
+    return newTransaction;
+}
+
+// Global transaction storage
+let allTransactions = [];
+let currentReportDate = getCurrentDate();
+
+// Initialize transaction storage from localStorage
+// function initializeTransactionStorage() {
+//     const savedTransactions = localStorage.getItem('allTransactions');
+//     if (savedTransactions) {
+//         try {
+//             allTransactions = JSON.parse(savedTransactions);
+//         } catch (error) {
+//             console.error('Error parsing saved transactions:', error);
+//             allTransactions = [];
+//         }
+//     }
+// }
+
+// Save all transactions to localStorage
+function saveAllTransactions() {
+    localStorage.setItem('allTransactions', JSON.stringify(allTransactions));
+}
+
+// Get current date in YYYY-MM-DD format
+function getCurrentDate() {
+    const now = new Date();
+    return now.toISOString().split('T')[0];
+}
+
+// Get transactions for a specific date
+function getTransactionsByDate(date) {
+    return allTransactions.filter(transaction => {
+        const transactionDate = transaction.timestamp.split('T')[0];
+        return transactionDate === date;
+    });
+}
+
+// Calculate totals for a specific date
+function calculateTotalsForDate(date) {
+    const transactions = getTransactionsByDate(date);
+    const totals = {
+        totalExchanges: transactions.length,
+        totalPrice: 0,
+        totalItems: 0,
+        products: {}
+    };
+
+    transactions.forEach(transaction => {
+        totals.totalPrice += transaction.totalPrice;
+
+        for (const [productId] of Object.entries(transaction.items)) {
+            const product = products[productId];
+            if (!totals.products[productId]) {
+                totals.products[productId] = {
+                    name: product.name,
+                    quantity: 0,
+                    price: 0
+                };
+            }
+            totals.products[productId].quantity += quantity;
+            totals.products[productId].price += quantity * product.price;
+            totals.totalItems += quantity;
+        }
+    });
+
+    return totals;
+}
+
+// Add transaction to storage
+function addTransaction(transactionData) {
+    const user = checkAuthentication();
+    if (user) {
+        transactionData.user = user.name;
+        transactionData.userRole = user.role;
+    }
+
+    allTransactions.push(transactionData);
+    saveAllTransactions();
+}
+
+
 // Daily Report Functions
 function showDailyReport() {
     const user = checkAuthentication();
@@ -529,14 +577,29 @@ function showDailyReport() {
         showNotification('Chỉ admin mới có quyền truy cập báo cáo!', 'error');
         return;
     }
-
+     const sections = [
+        "receiptSectionMoto",
+        "receiptSectionCar",
+        "dailyReportSection",
+        "userManagement"
+     ];
 
     // Hide other sections
-    document.getElementById('receiptSection').classList.add('hidden');
-    document.querySelector('section.bg-white.rounded-xl.shadow-lg.p-6.mb-8').classList.add('hidden');
+     sections.forEach(id =>{
+        const el = document.getElementById(id);
+        if (el)
+            el.classList.add('hidden');
+     });
+    // document.getElementById('receiptSectionMoto').classList.add('hidden');
+    // document.getElementById('receiptSectionCar').classList.add('hidden');
+    // document.querySelector('section.bg-white.rounded-xl.shadow-lg.p-6.mb-8').classList.add('hidden');
 
     // Show daily report section
-    document.getElementById('dailyReportSection').classList.remove('hidden');
+    const dailyReport = document.getElementById('dailyReportSection');
+    if (dailyReport){
+        dailyReport.classList.remove('hidden');
+    }
+    // document.getElementById('dailyReportSection').classList.remove('hidden');
 
     // Update report data for current date
     updateDailyReportDisplay(currentReportDate);
@@ -547,16 +610,17 @@ function hideDailyReport() {
     document.getElementById('dailyReportSection').classList.add('hidden');
 
     // Show summary section
-    document.querySelector('section.bg-white.rounded-xl.shadow-lg.p-6.mb-8').classList.remove('hidden');
+    // document.querySelector('section.bg-white.rounded-xl.shadow-lg.p-6.mb-8').classList.remove('hidden');
 }
 
 function updateDailyReportDisplay(date = currentReportDate) {
     currentReportDate = date;
     const totals = calculateTotalsForDate(date);
+    
 
     // Update summary cards
     document.getElementById('totalExchanges').textContent = totals.totalExchanges;
-    document.getElementById('totalPoints').textContent = totals.totalPoints.toLocaleString();
+    document.getElementById('totalPrice').textContent = totals.totalPrice.toLocaleString();
     document.getElementById('totalItems').textContent = totals.totalItems;
 
 
@@ -588,7 +652,7 @@ function updateDailyReportDisplay(date = currentReportDate) {
             row.innerHTML = `
                 <td class="px-4 py-3 text-gray-800 font-medium">${productData.name}</td>
                 <td class="px-4 py-3 text-center text-gray-700">${productData.quantity}</td>
-                <td class="px-4 py-3 text-center text-gray-700">${productData.points.toLocaleString()}</td>
+                <td class="px-4 py-3 text-center text-gray-700">${productData.price.toLocaleString()}</td>
             `;
             tableBody.appendChild(row);
         }
@@ -631,7 +695,7 @@ function updateTransactionHistory(date) {
         row.innerHTML = `
             <td class="px-4 py-3 text-gray-700 text-sm">${transactionTime}</td>
             <td class="px-4 py-3 text-gray-700 font-medium">${user}</td>
-            <td class="px-4 py-3 text-center text-gray-700 font-medium">${transaction.totalPoints.toLocaleString()}</td>
+            <td class="px-4 py-3 text-center text-gray-700 font-medium">${transaction.totalPrice.toLocaleString()}</td>
             <td class="px-4 py-3 text-gray-700 text-sm">${productList}</td>
         `;
         historyBody.appendChild(row);
@@ -719,11 +783,11 @@ function exportReportExcel() {
 
         // Summary sheet
         const summaryData = [
-            ['BÁO CÁO HÀNG NGÀY - JAZZY PARADISE'],
+            ['BÁO CÁO HÀNG NGÀY - GIGAMALL'],
             [''],
             ['Ngày:', currentReportDate],
             ['Tổng giao dịch:', totals.totalExchanges],
-            ['Tổng phiếu:', totals.totalPoints],
+            ['Tổng phiếu:', totals.totalPrice],
             ['Tổng sản phẩm:', totals.totalItems],
             [''],
             ['CHI TIẾT SẢN PHẨM'],
@@ -735,7 +799,7 @@ function exportReportExcel() {
             summaryData.push([
                 productData.name,
                 productData.quantity,
-                productData.points
+                productData.price
             ]);
         }
 
@@ -765,15 +829,15 @@ function exportReportExcel() {
 
                 Object.entries(transaction.items).forEach(([productId, quantity], itemIndex) => {
                     const product = products[productId];
-                    const itemPoints = quantity * product.points;
+                    const itemprice = quantity * product.price;
 
                     detailData.push([
                         itemIndex === 0 ? exchangeTime : '', // Only show time for first item
                         itemIndex === 0 ? (transaction.user || 'N/A') : '', // Only show user for first item
-                        itemIndex === 0 ? transaction.totalPoints : '', // Only show total for first item
+                        itemIndex === 0 ? transaction.totalPrice : '', // Only show total for first item
                         product.name,
                         quantity,
-                        itemPoints
+                        itemprice
                     ]);
                 });
 
@@ -868,14 +932,14 @@ function clearDailyReport() {
 function getAllTimeStats() {
     const stats = {
         totalTransactions: allTransactions.length,
-        totalPoints: 0,
+        totalPrice: 0,
         totalItems: 0,
         uniqueUsers: new Set(),
         products: {}
     };
 
     allTransactions.forEach(transaction => {
-        stats.totalPoints += transaction.totalPoints;
+        stats.totalPrice += transaction.totalPrice;
         if (transaction.user) {
             stats.uniqueUsers.add(transaction.user);
         }
@@ -887,11 +951,11 @@ function getAllTimeStats() {
                     stats.products[productId] = {
                         name: product.name,
                         quantity: 0,
-                        points: 0
+                        price: 0
                     };
                 }
                 stats.products[productId].quantity += quantity;
-                stats.products[productId].points += quantity * product.points;
+                stats.products[productId].price += quantity * product.price;
                 stats.totalItems += quantity;
             }
         }
@@ -907,7 +971,7 @@ function showAllTimeStats() {
     const message = `
         📊 Thống kê tổng quan:
         • Tổng giao dịch: ${stats.totalTransactions}
-        • Tổng phiếu: ${stats.totalPoints.toLocaleString()}
+        • Tổng phiếu: ${stats.totalPrice.toLocaleString()}
         • Tổng sản phẩm: ${stats.totalItems}
         • Người dùng: ${stats.uniqueUsers}
     `;
@@ -946,13 +1010,32 @@ function showUserManagement() {
         return;
     }
 
+    const sections = [
+        'receiptSectionMoto', 
+        'receiptSectionCar', 
+        'dailyReportSection', 
+        'userManagement',
+        // 'mainInputSection' // Nên đặt ID cho section trắng này thay vì query class
+    ];
+
     // Hide other sections
-    document.getElementById('receiptSection').classList.add('hidden');
-    document.getElementById('dailyReportSection').classList.add('hidden');
-    document.querySelector('section.bg-white.rounded-xl.shadow-lg.p-6.mb-8').classList.add('hidden');
+    sections.forEach(id =>{
+        const el = document.getElementById(id);
+        if (el)
+            el.classList.add('hidden');
+    });
+    // document.getElementById('receiptSectionMoto').classList.add('hidden');
+    // document.getElementById('receiptSectionCar').classList.add('hidden');
+    // document.getElementById('dailyReportSection').classList.add('hidden');
+    // document.querySelector('section.bg-white.rounded-xl.shadow-lg.p-6.mb-8').classList.add('hidden');
 
     // Show user management section
-    document.getElementById('userManagementSection').classList.remove('hidden');
+    const userManagementSection = document.getElementById('userManagement');
+    if (userManagementSection){
+        userManagementSection.classList.remove('hidden');
+    }
+    // document.getElementById('userManagement').classList.remove('hidden');
+    // document.getElementById('userManagement').classList.add('show');
 
     // Load user list
     refreshUserList();
@@ -960,10 +1043,13 @@ function showUserManagement() {
 
 function hideUserManagement() {
     // Hide user management section
-    document.getElementById('userManagementSection').classList.add('hidden');
+    const userManagementSection = document.getElementById('userManagement');
+    if (userManagementSection){
+        userManagementSection.classList.add('hidden');
+    }
 
     // Show summary section
-    document.querySelector('section.bg-white.rounded-xl.shadow-lg.p-6.mb-8').classList.remove('hidden');
+    // document.querySelector('section.bg-white.rounded-xl.shadow-lg.p-6.mb-8').classList.remove('hidden');
 }
 
 function refreshUserList() {
