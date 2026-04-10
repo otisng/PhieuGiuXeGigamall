@@ -319,11 +319,11 @@ function printReceipt(type) {
     const passcodeId = type === 'car' ? 'passcodeCar' : 'passcodeMoto';
     const iconClass = type === 'car' ? 'fa-car-side' : 'fa-motorcycle';
     
-    const prefix = type === 'car' ? 'CF' : 'MF';
+    // const prefix = type === 'car' ? 'CF' : 'MF';
 
     // 2. Lấy dữ liệu từ giao diện
     const sectionElement = document.getElementById(sectionId);
-    const passcode = document.getElementById(passcodeId).textContent;
+    const passcode = document.getElementById(passcodeId).value;
 
     // Lấy danh sách sản phẩm (nếu có id receiptItems bên trong section đó)
     const itemsHtml = sectionElement.querySelector('#receiptItems') ?
@@ -340,14 +340,14 @@ function printReceipt(type) {
                     <title>IN PHIẾU GIỮ XE</title>
                     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
                     <style>
-                        body { font-family: 'Courier New', Courier, monospace; padding: 20px; color: #000000; }
+                        body { font-family: 'Roboto', monospace; padding: 20px; color: #000000; }
                         .receipt-container { max-width: 300px; margin: 0 auto; border: 1px dashed #ccc; padding: 15px; }
                         .header { text-align: center; border-bottom: 1px solid #eee; pb: 10px; mb: 10px; }
                         .logo-text { font-weight: bold; font-size: 1rem; }
                         .info { font-size: 0.5rem; margin: 5px 0; }
-                        .main-title { text-align: center; font-weight: bold; margin: 15px 0; font-size: 0.8rem; border-top: 1px double #000; border-bottom: 1px double #000; padding: 5px 0; }
-                        .details { font-size: 0.5rem; line-height: 1; }
-                        .passcode { font-size: 0.6rem; font-weight: bold; text-align: center; display: block; margin: 10px 0; }
+                        .main-title { text-align: center; font-weight: bold; margin: 15px 0; font-size: 1rem; border-top: 1px double #000; border-bottom: 1px double #000; padding: 5px 0; }
+                        .details { font-size: 0.5rem; line-height: 1.2; }
+                        .passcode { font-size: 0.8rem; font-weight: bold; text-align: center; display: block; margin: 10px 0; }
                         .footer { text-align: center; font-size: 0.5rem; margin-top: 20px; border-top: 1px solid #eee; pt: 10px; }
                         .vehicle-icon { font-size: 1.5rem; text-align: center; margin: 10px 0; display: block; }
                         .receipt-logo { display: flex; justify-content: center; align-items: center; margin-bottom: 5px; }
@@ -383,7 +383,7 @@ function printReceipt(type) {
         
                         <div class="details">
                             <div><b>Thời gian:</b> ${document.getElementById('current-time').textContent}</div>
-                            <div><b>Mã số:</b> <span class="passcode">${prefix}-${passcode}</span></div>
+                            <div><b>Mã số:</b> <span class="passcode">${passcode}</span></div>
                             <hr style="border: 0.5px dashed #ccc">
                             <div id="printItems">${itemsHtml}</div>
                         </div>
@@ -413,24 +413,40 @@ function printReceipt(type) {
  */
 function generatePasscode(btnSelector, displayId, type) {
     const btn = document.querySelector(btnSelector);
-    const displayElement = document.getElementById(displayId);
+    const inputElement = document.getElementById(displayId);
+
+    // Tự động focus vào ô input khi trang vừa tải xong
+    window.onload = () => inputElement.focus();
+
+    // Lắng nghe sự kiện quét từ máy QR
+    inputElement.addEventListener('keypress', function (e) {
+        if (e.key === 'Enter') {
+            e.preventDefault(); // Chặn hành động xuống dòng mặc định
+            
+            const scannedValue = this.value.trim();
+            
+            if (scannedValue) {
+                showPreview(scannedValue);
+            }
+        }
+    });
 
     // 1. Hiệu ứng nút bấm (Thêm và tự động xóa sau 200ms)
     btn.classList.add('btn-clicked');
     setTimeout(() => btn.classList.remove('btn-clicked'), 2000);
 
     // 2. Cấu hình
-    const length = 10;
-    const charset = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-    let result = "";
+    // const length = 10;
+    // const charset = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    // let result = "";
 
     // 3. Tạo passcode ngẫu nhiên
-    for (let i = 0; i < length; i++) {
-        result += charset.charAt(Math.floor(Math.random() * charset.length));
-    }
+    // for (let i = 0; i < length; i++) {
+    //     result += charset.charAt(Math.floor(Math.random() * charset.length));
+    // }
 
     // 4. Hiển thị kết quả
-    displayElement.innerText = result;
+    // displayElement.innerText = result;
 
     const carSection = document.getElementById('receiptSectionCar');
     const motoSection = document.getElementById('receiptSectionMoto');
