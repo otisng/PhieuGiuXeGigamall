@@ -1,3 +1,42 @@
+// ==================== GLOBAL STATE ====================
+// Load lịch sử giao dịch từ localStorage
+let allTransactions = JSON.parse(localStorage.getItem("parking_history")) || [];
+let currentReportDate = new Date().toISOString().split("T")[0];
+
+// Lưu toàn bộ giao dịch xuống localStorage
+function saveAllTransactions() {
+  localStorage.setItem("parking_history", JSON.stringify(allTransactions));
+}
+
+/**
+ * Parse timestamp từ nhiều định dạng:
+ *  - ISO:      "2026-04-11T17:00:00.000Z"
+ *  - vi-VN v1: "17:19:38 11/4/2026"   ← TIME trước DATE sau (Chrome vi-VN)
+ *  - vi-VN v2: "11/4/2026, 17:19:38"  ← DATE trước TIME sau (có dấu phẩy)
+ *  - vi-VN v3: "11/4/2026 17:19:38"   ← DATE trước TIME sau (không dấu phẩy)
+ * Trả về chuỗi "YYYY-MM-DD" hoặc "" nếu parse thất bại.
+ */
+function parseDateFromTimestamp(raw) {
+  if (!raw) return "";
+  // ISO format
+  if (raw.includes("T")) return raw.split("T")[0];
+  if (raw.includes("/")) {
+    // Tìm phần chứa dấu "/" (là phần ngày, không phải phần giờ)
+    const segments = raw.replace(",", "").trim().split(" ");
+    const datePart = segments.find((s) => s.includes("/"));
+    if (datePart) {
+      const d = datePart.split("/");
+      if (d.length === 3) {
+        // d[0]=ngày, d[1]=tháng, d[2]=năm
+        return `${d[2].padStart(4, "0")}-${d[1].padStart(2, "0")}-${d[0].padStart(2, "0")}`;
+      }
+    }
+  }
+  return "";
+}
+
+// =========================================================
+
 // Authentication functions
 function checkAuthentication() {
   const currentUser = localStorage.getItem("currentUser");
@@ -122,7 +161,8 @@ btn.on("click", function (e) {
 });
 
 window.onload = function () {
-  document.querySelector(".preloader").style.display = "none";
+  const preloader = document.querySelector(".preloader");
+  if (preloader) preloader.style.display = "none";
 };
 
 // Initialize event listeners for direct input changes
@@ -517,13 +557,6 @@ function getCurrentDate() {
   return now.toISOString().split("T")[0];
 }
 
-// Get transactions for a specific date
-function getTransactionsByDate(date) {
-  return allTransactions.filter((transaction) => {
-    const transactionDate = transaction.timestamp.split("T")[0];
-    return transactionDate === date;
-  });
-}
 
 // Daily Report Functions
 function showDailyReport() {
@@ -572,92 +605,134 @@ function hideDailyReport() {
   // document.querySelector('section.bg-white.rounded-xl.shadow-lg.p-6.mb-8').classList.remove('hidden');
 }
 
-// function updateDailyReportDisplay(date = currentReportDate) {
-//     currentReportDate = date;
-//     const totals = calculateTotalsForDate(date);
+/**
+ * Tính tổng thống kê cho một ngày cụ thể
+ * Dữ liệu từ parking_history có dạng:
+ * { nameProduct, price, serialNumber, barCode, timestamp, type }
+ */
+function calculateTotalsForDate(date) {
+  allTransactions = JSON.parse(localStorage.getItem("parking_history")) || [];
 
-//     // Update summary cards
-//     document.getElementById('totalExchanges').textContent = totals.totalExchanges;
-//     document.getElementById('totalPrice').textContent = totals.totalPrice.toLocaleString();
-//     document.getElementById('totalItems').textContent = totals.totalItems;
+  const dayTransactions = allTransactions.filter(
+    (t) => parseDateFromTimestamp(t.timestamp) === date
+  );
 
-//     // Update date
-//     const reportDate = new Date(date);
-//     document.getElementById('reportDate').textContent = reportDate.toLocaleDateString('vi-VN', {
-//         weekday: 'long',
-//         year: 'numeric',
-//         month: 'long',
-//         day: 'numeric'
-//     });
+  const totals = {
+    totalExchanges: dayTransactions.length,
+    totalPrice: 0,
+    totalItems: dayTransactions.length,
+    products: {},
+  };
 
-//     // Update date input
-//     const dateInput = document.getElementById('reportDateInput');
-//     if (dateInput) {
-//         dateInput.value = date;
-//     }
+  dayTransactions.forEach((t) => {
+    const typeKey = t.type || "unknown";
+    totals.totalPrice += t.price || 0;
 
-//     // Update product table
-//     const tableBody = document.getElementById('reportTableBody');
-//     tableBody.innerHTML = '';
+    if (!totals.products[typeKey]) {
+      totals.products[typeKey] = {
+        name: t.nameProduct || typeKey,
+        quantity: 0,
+        price: 0,
+      };
+    }
+    totals.products[typeKey].quantity += 1;
+    totals.products[typeKey].price += t.price || 0;
+  });
 
-//     if (Object.keys(totals.products).length === 0) {
-//         tableBody.innerHTML = '<tr><td colspan="3" class="px-4 py-3 text-center text-gray-500">Không có dữ liệu</td></tr>';
-//     } else {
-//         for (const [productId, productData] of Object.entries(totals.products)) {
-//             const row = document.createElement('tr');
-//             row.className = 'border-b border-gray-200';
-//             row.innerHTML = `
-//                 <td class="px-4 py-3 text-gray-800 font-medium">${productData.name}</td>
-//                 <td class="px-4 py-3 text-center text-gray-700">${productData.quantity}</td>
-//                 <td class="px-4 py-3 text-center text-gray-700">${productData.price.toLocaleString()}</td>
-//             `;
-//             tableBody.appendChild(row);
-//         }
-//     }
+  return totals;
+}
 
-//     // Update transaction history
-//     updateTransactionHistory(date);
-// }
+/** Lấy giao dịch theo ngày */
+function getTransactionsByDate(date) {
+  allTransactions = JSON.parse(localStorage.getItem("parking_history")) || [];
+  return allTransactions.filter(
+    (t) => parseDateFromTimestamp(t.timestamp) === date
+  );
+}
 
-// function updateTransactionHistory(date) {
-//     const transactions = getTransactionsByDate(date);
-//     const historyBody = document.getElementById('transactionHistoryBody');
-//     historyBody.innerHTML = '';
+/** Cập nhật toàn bộ giao diện dailyReportSection theo ngày */
+function updateDailyReportDisplay(date) {
+  currentReportDate = date || getCurrentDate();
+  const totals = calculateTotalsForDate(currentReportDate);
 
-//     if (transactions.length === 0) {
-//         historyBody.innerHTML = '<tr><td colspan="4" class="px-4 py-3 text-center text-gray-500">Không có giao dịch nào</td></tr>';
-//         return;
-//     }
+  // --- Summary cards ---
+  document.getElementById("totalExchanges").textContent = totals.totalExchanges;
+  document.getElementById("totalPrice").textContent =
+    totals.totalPrice.toLocaleString("vi-VN") + " VNĐ";
+  document.getElementById("totalItems").textContent = totals.totalItems;
 
-//     // Sort transactions by timestamp (newest first)
-//     const sortedTransactions = transactions.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+  // --- Hiển thị ngày ---
+  const reportDate = new Date(currentReportDate + "T00:00:00");
+  document.getElementById("reportDate").textContent = reportDate.toLocaleDateString("vi-VN", {
+    weekday: "long",
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
 
-//     // Show only the last 10 transactions
-//     const recentTransactions = sortedTransactions.slice(0, 10);
+  const dateInput = document.getElementById("reportDateInput");
+  if (dateInput) dateInput.value = currentReportDate;
 
-//     recentTransactions.forEach(transaction => {
-//         const transactionTime = new Date(transaction.timestamp).toLocaleString('vi-VN');
-//         const user = transaction.user || 'N/A';
+  // --- Bảng chi tiết sản phẩm ---
+  const tableBody = document.getElementById("reportTableBody");
+  tableBody.innerHTML = "";
 
-//         // Create product list
-//         const productList = Object.entries(transaction.items)
-//             .map(([productId, quantity]) => {
-//                 const product = products[productId];
-//                 return `${product.name} (${quantity})`;
-//             })
-//             .join(', ');
+  if (Object.keys(totals.products).length === 0) {
+    tableBody.innerHTML =
+      '<tr><td colspan="3" class="px-4 py-8 text-center text-gray-500">Không có dữ liệu cho ngày này</td></tr>';
+  } else {
+    for (const [, productData] of Object.entries(totals.products)) {
+      const row = document.createElement("tr");
+      row.className = "border-b border-gray-200 hover:bg-gray-50 transition-colors";
+      row.innerHTML = `
+        <td class="px-4 py-3 text-gray-800 font-medium">${productData.name}</td>
+        <td class="px-4 py-3 text-center text-gray-700">${productData.quantity}</td>
+        <td class="px-4 py-3 text-center text-gray-700">${productData.price.toLocaleString("vi-VN")} VNĐ</td>
+      `;
+      tableBody.appendChild(row);
+    }
+  }
 
-//         const row = document.createElement('tr');
-//         row.className = 'border-b border-gray-200 hover:bg-gray-50';
-//         row.innerHTML = `
-//             <td class="px-4 py-3 text-gray-700 text-sm">${transactionTime}</td>
-//             <td class="px-4 py-3 text-gray-700 font-medium">${user}</td>
-//             <td class="px-4 py-3 text-center text-gray-700 font-medium">${transaction.totalPrice.toLocaleString()}</td>
-//             <td class="px-4 py-3 text-gray-700 text-sm">${productList}</td>
-//         `;
-//         historyBody.appendChild(row);
-//     });
-// }
+  // --- Lịch sử giao dịch ---
+  updateTransactionHistory(currentReportDate);
+}
+
+/** Render bảng lịch sử giao dịch */
+function updateTransactionHistory(date) {
+  const transactions = getTransactionsByDate(date);
+  const historyBody = document.getElementById("transactionHistoryBody");
+  historyBody.innerHTML = "";
+
+  if (transactions.length === 0) {
+    historyBody.innerHTML =
+      '<tr><td colspan="4" class="px-4 py-8 text-center text-gray-500">Không có giao dịch nào trong ngày này</td></tr>';
+    return;
+  }
+
+  // Sắp xếp mới nhất trước
+  const sorted = [...transactions].reverse();
+
+  // Chỉ hiển thị 50 giao dịch gần nhất
+  sorted.slice(0, 50).forEach((t) => {
+    const currentUser = JSON.parse(localStorage.getItem("currentUser") || "{}");
+    const userName = currentUser.name || "N/A";
+    const row = document.createElement("tr");
+    row.className = "border-b border-gray-200 hover:bg-gray-50 transition-colors";
+    row.innerHTML = `
+      <td class="px-4 py-3 text-gray-700 text-sm">${t.timestamp || ""}</td>
+      <td class="px-4 py-3 text-gray-700 font-medium">${userName}</td>
+      <td class="px-4 py-3 text-center">
+        <span class="px-2 py-1 rounded-full text-xs font-semibold ${
+          t.type === "car"
+            ? "bg-blue-100 text-blue-700"
+            : "bg-green-100 text-green-700"
+        }">${t.nameProduct || ""}</span>
+      </td>
+      <td class="px-4 py-3 text-gray-700 text-sm font-mono">${t.serialNumber || ""}</td>
+    `;
+    historyBody.appendChild(row);
+  });
+}
 
 // Date filter functions
 function changeReportDate(direction) {
@@ -682,10 +757,11 @@ function selectReportDate() {
 
 // Get available dates with transactions
 function getAvailableDates() {
+  const history = JSON.parse(localStorage.getItem("parking_history")) || [];
   const dates = new Set();
-  allTransactions.forEach((transaction) => {
-    const date = transaction.timestamp.split("T")[0];
-    dates.add(date);
+  history.forEach((t) => {
+    const d = parseDateFromTimestamp(t.timestamp);
+    if (d) dates.add(d);
   });
   return Array.from(dates).sort().reverse();
 }
@@ -778,58 +854,34 @@ function exportReportExcel() {
       const detailData = [
         ["CHI TIẾT GIAO DỊCH"],
         [""],
-        [
-          "Thời gian",
-          "Người dùng",
-          "Tổng phiếu",
-          "Sản phẩm",
-          "Số lượng",
-          "Phiếu",
-        ],
+        ["Thời gian", "Loại xe", "Số phiếu", "Mã Barcode", "Tiền (VNĐ)"],
       ];
 
-      transactions.forEach((transaction, index) => {
-        const exchangeTime = new Date(transaction.timestamp).toLocaleString(
-          "vi-VN",
-        );
-
-        Object.entries(transaction.items).forEach(
-          ([productId, quantity], itemIndex) => {
-            const product = products[productId];
-            const itemprice = quantity * product.price;
-
-            detailData.push([
-              itemIndex === 0 ? exchangeTime : "", // Only show time for first item
-              itemIndex === 0 ? transaction.user || "N/A" : "", // Only show user for first item
-              itemIndex === 0 ? transaction.totalPrice : "", // Only show total for first item
-              product.name,
-              quantity,
-              itemprice,
-            ]);
-          },
-        );
-
-        // Add empty row between transactions
-        if (index < transactions.length - 1) {
-          detailData.push(["", "", "", "", "", ""]);
-        }
+      transactions.forEach((t) => {
+        detailData.push([
+          t.timestamp || "",
+          t.nameProduct || "",
+          t.serialNumber || "",
+          t.barCode || "",
+          t.price || 0,
+        ]);
       });
 
       const detailWs = XLSX.utils.aoa_to_sheet(detailData);
 
       // Set column widths for detail sheet
       detailWs["!cols"] = [
+        { width: 22 },
+        { width: 14 },
+        { width: 18 },
         { width: 20 },
-        { width: 15 },
-        { width: 12 },
-        { width: 20 },
-        { width: 12 },
-        { width: 12 },
+        { width: 14 },
       ];
 
       // Add detail sheet to workbook
       XLSX.utils.book_append_sheet(wb, detailWs, "Chi tiết giao dịch");
     }
+
 
     // Generate filename with current date
     const fileName = `bao-cao-ngay-${currentReportDate}.xlsx`;
@@ -907,51 +959,44 @@ function clearDailyReport() {
 
 // Get statistics for all time
 function getAllTimeStats() {
+  const history = JSON.parse(localStorage.getItem("parking_history")) || [];
   const stats = {
-    totalTransactions: allTransactions.length,
+    totalTransactions: history.length,
     totalPrice: 0,
-    totalItems: 0,
-    uniqueUsers: new Set(),
+    totalItems: history.length,
     products: {},
   };
 
-  allTransactions.forEach((transaction) => {
-    stats.totalPrice += transaction.totalPrice;
-    if (transaction.user) {
-      stats.uniqueUsers.add(transaction.user);
+  history.forEach((t) => {
+    stats.totalPrice += t.price || 0;
+    const typeKey = t.type || "unknown";
+    if (!stats.products[typeKey]) {
+      stats.products[typeKey] = {
+        name: t.nameProduct || typeKey,
+        quantity: 0,
+        price: 0,
+      };
     }
-
-    for (const [productId, quantity] of Object.entries(transaction.items)) {
-      if (quantity > 0) {
-        const product = products[productId];
-        if (!stats.products[productId]) {
-          stats.products[productId] = {
-            name: product.name,
-            quantity: 0,
-            price: 0,
-          };
-        }
-        stats.products[productId].quantity += quantity;
-        stats.products[productId].price += quantity * product.price;
-        stats.totalItems += quantity;
-      }
-    }
+    stats.products[typeKey].quantity += 1;
+    stats.products[typeKey].price += t.price || 0;
   });
 
-  stats.uniqueUsers = stats.uniqueUsers.size;
   return stats;
 }
 
 // Show all time statistics
 function showAllTimeStats() {
   const stats = getAllTimeStats();
-  const message = `
-        📊 Thống kê tổng quan:
-        • Tổng giao dịch: ${stats.totalTransactions}
-        • Tổng phiếu: ${stats.totalPrice.toLocaleString()}
-        • Tổng sản phẩm: ${stats.totalItems}
-        • Người dùng: ${stats.uniqueUsers}
-    `;
+  const productLines = Object.values(stats.products)
+    .map((p) => `  • ${p.name}: ${p.quantity} phiếu — ${p.price.toLocaleString("vi-VN")} VNĐ`)
+    .join("\n");
+
+  const message =
+    `📊 Thống kê tổng quan:\n` +
+    `• Tổng giao dịch: ${stats.totalTransactions}\n` +
+    `• Tổng tiền: ${stats.totalPrice.toLocaleString("vi-VN")} VNĐ\n` +
+    `• Tổng sản phẩm: ${stats.totalItems}\n\n` +
+    `Chi tiết:\n${productLines || "  (chưa có dữ liệu)"}`;
 
   alert(message);
 }
