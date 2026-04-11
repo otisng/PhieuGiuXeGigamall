@@ -187,13 +187,6 @@ document.addEventListener("DOMContentLoaded", function () {
     dateInput.value = getCurrentDate();
   }
 
-  // for (const productId of Object.keys(products)) {
-  //     document.getElementById(`${productId}-qty`).addEventListener('input', function () {
-  //         if (this.value < 0) this.value = 0;
-  //         updateSummary();
-  //     });
-  // }
-
   // Show notification about data storage
   if (allTransactions.length > 0) {
     showNotification(
@@ -208,107 +201,6 @@ document.addEventListener("DOMContentLoaded", function () {
     createUserForm.addEventListener("submit", createUser);
   }
 });
-
-// User's current price balance
-// let userprice = 10000;
-
-// Adjust quantity for a product
-// function adjustQuantity(productId, change) {
-//     const input = document.getElementById(`${productId}-qty`);
-//     let newValue = parseInt(input.value) + change;
-//     if (newValue < 0) newValue = 0;
-//     input.value = newValue;
-//     updateSummary();
-// }
-
-// Update the summary section
-// function updateSummary() {
-//     let subtotal = 0;
-//     let hasItems = false;
-//     const selectedItemsContainer = document.getElementById('selectedItems');
-
-//     // Clear previous items
-//     selectedItemsContainer.innerHTML = '';
-
-//     // Calculate subtotal and build selected items list
-//     for (const [productId, product] of Object.entries(products)) {
-//         const quantity = parseInt(document.getElementById(`${productId}-qty`).value);
-//         if (quantity > 0) {
-//             hasItems = true;
-//             const itemprice = quantity * product.price;
-//             subtotal += itemprice;
-
-//             // Add item to the selected items list
-//             const itemElement = document.createElement('div');
-//             itemElement.className = 'flex justify-between items-center bg-gray-50 p-3 rounded-lg';
-//             itemElement.innerHTML = `
-//                 <div>
-//                     <span class="font-medium">${product.name}</span>
-//                     <span class="text-sm text-gray-500 block">${product.price} Phiếu × ${quantity}</span>
-//                 </div>
-//                 <span class="font-medium"> = ${itemprice} Phiếu</span>
-//             `;
-//             selectedItemsContainer.appendChild(itemElement);
-//         }
-//     }
-
-//     // If no items selected, show placeholder
-//     if (!hasItems) {
-//         selectedItemsContainer.innerHTML = '<p class="text-gray-500 italic">Không có sản phẩm được chọn</p>';
-//     }
-
-//     // Update summary values
-//     document.getElementById('subtotal').textContent = `${subtotal.toLocaleString()} Phiếu`;
-
-// }
-
-// Process the price exchange
-// function processExchange() {
-//     const subtotal = parseInt(document.getElementById('subtotal').textContent.replace(/,| pts/g, ''));
-//     // const remaining = userprice - subtotal;
-
-//     if (subtotal > 0) {
-//         // Collect exchange data
-//         const exchangeData = {
-//             timestamp: new Date().toISOString(),
-//             totalPrice: subtotal,
-//             items: {}
-//         };
-
-//         // Build receipt and collect items
-//         const receiptItemsContainer = document.getElementById('receiptItems');
-//         receiptItemsContainer.innerHTML = '';
-
-//         for (const [productId, product] of Object.entries(products)) {
-//             const quantity = parseInt(document.getElementById(`${productId}-qty`).value);
-//             if (quantity > 0) {
-//                 exchangeData.items[productId] = quantity;
-
-//                 const itemElement = document.createElement('div');
-//                 itemElement.className = 'flex justify-between';
-//                 itemElement.innerHTML = `
-//                     <span>${product.name} × ${quantity}</span>
-//                     <span> = ${(quantity * product.price).toLocaleString()} Phiếu</span>
-//                 `;
-//                 receiptItemsContainer.appendChild(itemElement);
-//             }
-//         }
-
-//         // Add to transaction storage
-//         addTransaction(exchangeData);
-
-//         // Update receipt totals
-//         document.getElementById('receiptTotal').textContent = `${subtotal.toLocaleString()} Phiếu`;
-//         // document.getElementById('receiptBalance').textContent = `${remaining.toLocaleString()} pts`;
-
-//         // Show receipt and hide summary
-//         // document.getElementById('receiptSection').classList.remove('hidden');
-//         // document.querySelector('section.bg-white.rounded-xl.shadow-lg.p-6.mb-8').classList.add('hidden');
-
-//         // Update price display in header
-//         // document.getElementById('totalPrice').textContent = remaining.toLocaleString();
-//     }
-// }
 
 // cấu hình thông tin sản phẩm
 const PRODUCTS = {
@@ -363,21 +255,13 @@ function printReceipt(type) {
     ? sectionElement.querySelector("#receiptItems").innerHTML
     : "<p>Dịch vụ giữ xe miễn phí</p>";
 
-  // lay thông tin mã serial hiện tại., luu data
-  //   let currentCount = localStorage.getItem("lastSerial")
-  // ? parseInt(localStorage.getItem("lastSerial"))
-  // : 1;
+
   let currentSerial = parseInt(localStorage.getItem("serial_${type}")) || 1;
 
   const formattedSerial =
     prefix + "-" + currentSerial.toString().padStart(9, "0");
 
   serialElement.innerText = formattedSerial;
-  //   document.getElementById(serialId).innerText = formattedSerial;
-  // const currentSerial = updateSerialDisplay(type);
-  // Và sau khi tăng currentCount++, hãy lưu lại:
-  //   currentCount += 1;
-  //   localStorage.setItem("lastSerial", currentCount);
 
   // tạo objects data
   const allTransactions = {
@@ -534,23 +418,6 @@ function scanBarCode(btnSelector, displayId, type) {
   }
 }
 
-// Reset the exchange form
-// function resetExchange() {
-//     // Reset all quantities to 0
-//     for (const productId of Object.keys(products)) {
-//         document.getElementById(`${productId}-qty`).value = 0;
-//     }
-
-//     // Update summary
-//     updateSummary();
-
-//     // Show summary and hide other sections
-//     document.getElementById('receiptSectionMoto').classList.add('hidden');
-//     document.getElementById('receiptSectionCar').classList.add('hidden');
-//     document.getElementById('dailyReportSection').classList.add('hidden');
-//     // document.querySelector('section.bg-white.rounded-xl.shadow-lg.p-6.mb-8').classList.remove('hidden');
-// }
-
 // Get current date in YYYY-MM-DD format
 function getCurrentDate() {
   const now = new Date();
@@ -582,16 +449,12 @@ function showDailyReport() {
     const el = document.getElementById(id);
     if (el) el.classList.add("hidden");
   });
-  // document.getElementById('receiptSectionMoto').classList.add('hidden');
-  // document.getElementById('receiptSectionCar').classList.add('hidden');
-  // document.querySelector('section.bg-white.rounded-xl.shadow-lg.p-6.mb-8').classList.add('hidden');
 
   // Show daily report section
   const dailyReport = document.getElementById("dailyReportSection");
   if (dailyReport) {
     dailyReport.classList.remove("hidden");
   }
-  // document.getElementById('dailyReportSection').classList.remove('hidden');
 
   // Update report data for current date
   updateDailyReportDisplay(currentReportDate);
@@ -600,9 +463,6 @@ function showDailyReport() {
 function hideDailyReport() {
   // Hide daily report section
   document.getElementById("dailyReportSection").classList.add("hidden");
-
-  // Show summary section
-  // document.querySelector('section.bg-white.rounded-xl.shadow-lg.p-6.mb-8').classList.remove('hidden');
 }
 
 /**
@@ -1037,7 +897,6 @@ function showUserManagement() {
     "receiptSectionCar",
     "dailyReportSection",
     "userManagement",
-    // 'mainInputSection' // Nên đặt ID cho section trắng này thay vì query class
   ];
 
   // Hide other sections
@@ -1045,18 +904,12 @@ function showUserManagement() {
     const el = document.getElementById(id);
     if (el) el.classList.add("hidden");
   });
-  // document.getElementById('receiptSectionMoto').classList.add('hidden');
-  // document.getElementById('receiptSectionCar').classList.add('hidden');
-  // document.getElementById('dailyReportSection').classList.add('hidden');
-  // document.querySelector('section.bg-white.rounded-xl.shadow-lg.p-6.mb-8').classList.add('hidden');
 
   // Show user management section
   const userManagementSection = document.getElementById("userManagement");
   if (userManagementSection) {
     userManagementSection.classList.remove("hidden");
   }
-  // document.getElementById('userManagement').classList.remove('hidden');
-  // document.getElementById('userManagement').classList.add('show');
 
   // Load user list
   refreshUserList();
@@ -1068,9 +921,6 @@ function hideUserManagement() {
   if (userManagementSection) {
     userManagementSection.classList.add("hidden");
   }
-
-  // Show summary section
-  // document.querySelector('section.bg-white.rounded-xl.shadow-lg.p-6.mb-8').classList.remove('hidden');
 }
 
 function refreshUserList() {
@@ -1085,9 +935,6 @@ function refreshUserList() {
   }
 
   for (const [username, userData] of Object.entries(accounts)) {
-    // const roleText = userData.role === 'admin' ? 'Quản trị viên' : 'Người dùng';
-    // const roleColor = userData.role === 'admin' ? 'text-red-600' : 'text-blue-600';
-    // const roleColorSupervisor = userData.role === 'supervisor' ? 'text-green-600' : 'text-blue-600';
     const roleMap = {
       admin: {
         text: "Quản trị viên",
