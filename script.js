@@ -88,16 +88,16 @@ function displayUserInfo() {
       userInfoElement.textContent = `${user.name} (${user.role})`;
     }
 
-    // Show/hide report button based on role
-    const reportButton = document.querySelector(
-      'button[onclick="showDailyReport()"]',
-    );
+    // Show/hide report dropdown based on role
+    const reportDropdown = document.getElementById("reportDropdown");
 
-    if (reportButton) {
+    if (reportDropdown) {
       const allowedRoles = ["admin", "supervisor"];
-      reportButton.style.display = allowedRoles.includes(user.role)
-        ? "flex"
-        : "none";
+      if (allowedRoles.includes(user.role)) {
+          reportDropdown.classList.remove("hidden");
+      } else {
+          reportDropdown.classList.add("hidden");
+      }
     }
 
     // Show/hide user management button based on role
@@ -1049,4 +1049,224 @@ function deleteUser(username) {
     refreshUserList();
     showNotification(`Đã xóa tài khoản ${username}!`, "success");
   }
+}
+
+function toggleReportDropdown(event) {
+    if (event) event.stopPropagation();
+    const content = document.getElementById("reportDropdownContent");
+    if (content) {
+        content.classList.toggle("hidden");
+    }
+}
+
+// Close dropdown when clicking outside
+document.addEventListener("click", function(event) {
+    const dropdown = document.getElementById("reportDropdown");
+    const content = document.getElementById("reportDropdownContent");
+    if (dropdown && content && !dropdown.contains(event.target)) {
+        content.classList.add("hidden");
+    }
+});
+
+// ==================== MONTHLY REPORT FUNCTIONS ====================
+
+function showMonthlyReport() {
+    const user = checkAuthentication();
+    if (!user || (user.role !== "admin" && user.role !== "supervisor")) {
+        showNotification("Bạn không có quyền truy cập báo cáo này!", "error");
+        return;
+    }
+
+    const sections = [
+        "receiptSectionMoto",
+        "receiptSectionCar",
+        "dailyReportSection",
+        "monthlyReportSection",
+        "userManagement",
+    ];
+
+    sections.forEach((id) => {
+        const el = document.getElementById(id);
+        if (el) el.classList.add("hidden");
+    });
+
+    const monthlyReport = document.getElementById("monthlyReportSection");
+    if (monthlyReport) monthlyReport.classList.remove("hidden");
+
+    // Default to current month
+    const now = new Date();
+    const monthStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
+    const monthInput = document.getElementById("reportMonthInput");
+    if (monthInput) monthInput.value = monthStr;
+
+    updateMonthlyReportDisplay(monthStr);
+}
+
+function hideMonthlyReport() {
+    document.getElementById("monthlyReportSection").classList.add("hidden");
+}
+
+function selectReportMonth() {
+    const monthInput = document.getElementById("reportMonthInput");
+    if (monthInput && monthInput.value) {
+        updateMonthlyReportDisplay(monthInput.value);
+    }
+}
+
+function calculateTotalsForMonth(yearMonth) {
+    const history = JSON.parse(localStorage.getItem("parking_history")) || [];
+    // yearMonth format: "YYYY-MM"
+    
+    const monthTransactions = history.filter(t => {
+        const date = parseDateFromTimestamp(t.timestamp);
+        return date && date.startsWith(yearMonth);
+    });
+
+    const totals = {
+        totalExchanges: monthTransactions.length,
+        totalPrice: 0,
+        totalItems: monthTransactions.length,
+        products: {},
+        dailyStats: {} // { "YYYY-MM-DD": { car: 0, moto: 0, price: 0 } }
+    };
+
+    monthTransactions.forEach(t => {
+        const typeKey = t.type || "unknown";
+        const price = t.price || 0;
+        const date = parseDateFromTimestamp(t.timestamp);
+        
+        totals.totalPrice += price;
+
+        // By product
+        if (!totals.products[typeKey]) {
+            totals.products[typeKey] = {
+                name: t.nameProduct || typeKey,
+                quantity: 0,
+                price: 0
+            };
+        }
+        totals.products[typeKey].quantity += 1;
+        totals.products[typeKey].price += price;
+
+        // By day
+        if (date) {
+            if (!totals.dailyStats[date]) {
+                totals.dailyStats[date] = { car: 0, moto: 0, price: 0 };
+            }
+            if (typeKey === "car") totals.dailyStats[date].car += 1;
+            if (typeKey === "moto") totals.dailyStats[date].moto += 1;
+            totals.dailyStats[date].price += price;
+        }
+    });
+
+    return totals;
+}
+
+function updateMonthlyReportDisplay(yearMonth) {
+    const totals = calculateTotalsForMonth(yearMonth);
+    
+    // Titles
+    const [year, month] = yearMonth.split("-");
+    document.getElementById("monthlyReportTitle").textContent = `Tháng ${month}/${year}`;
+    
+    // Summary cards
+    document.getElementById("monthlyTotalExchanges").textContent = totals.totalExchanges;
+    document.getElementById("monthlyTotalPrice").textContent = totals.totalPrice.toLocaleString("vi-VN") + " VNĐ";
+    document.getElementById("monthlyTotalItems").textContent = totals.totalItems;
+
+    // Product Table
+    const productBody = document.getElementById("monthlyReportTableBody");
+    productBody.innerHTML = "";
+    if (Object.keys(totals.products).length === 0) {
+        productBody.innerHTML = '<tr><td colspan="3" class="px-4 py-8 text-center text-gray-500">Không có dữ liệu trong tháng này</td></tr>';
+    } else {
+        Object.values(totals.products).forEach(p => {
+            const row = document.createElement("tr");
+            row.className = "border-b border-gray-200 hover:bg-gray-50 transition-colors";
+            row.innerHTML = `
+                <td class="px-4 py-3 text-gray-800 font-medium">${p.name}</td>
+                <td class="px-4 py-3 text-center text-gray-700">${p.quantity}</td>
+                <td class="px-4 py-3 text-center text-gray-700">${p.price.toLocaleString("vi-VN")} VNĐ</td>
+            `;
+            productBody.appendChild(row);
+        });
+    }
+
+    // Daily Stats Table
+    const dailyBody = document.getElementById("monthlyDailyStatsBody");
+    dailyBody.innerHTML = "";
+    const sortedDays = Object.keys(totals.dailyStats).sort().reverse();
+    
+    if (sortedDays.length === 0) {
+        dailyBody.innerHTML = '<tr><td colspan="4" class="px-4 py-8 text-center text-gray-500">Không có dữ liệu chi tiết</td></tr>';
+    } else {
+        sortedDays.forEach(date => {
+            const stats = totals.dailyStats[date];
+            const row = document.createElement("tr");
+            row.className = "border-b border-gray-200 hover:bg-gray-50 transition-colors";
+            row.innerHTML = `
+                <td class="px-4 py-3 text-gray-700 font-mono text-sm">${date}</td>
+                <td class="px-4 py-3 text-center text-green-600 font-medium">${stats.moto}</td>
+                <td class="px-4 py-3 text-center text-blue-600 font-medium">${stats.car}</td>
+                <td class="px-4 py-3 text-center text-gray-800">${stats.price.toLocaleString("vi-VN")} VNĐ</td>
+            `;
+            dailyBody.appendChild(row);
+        });
+    }
+}
+
+function exportMonthlyReportExcel() {
+    const monthInput = document.getElementById("reportMonthInput");
+    const yearMonth = monthInput.value;
+    if (!yearMonth) return;
+
+    const totals = calculateTotalsForMonth(yearMonth);
+    const [year, month] = yearMonth.split("-");
+
+    try {
+        const wb = XLSX.utils.book_new();
+
+        // Sheet 1: Tổng quan tháng
+        const summaryData = [
+            [`BÁO CÁO DOANH THU THÁNG ${month}/${year} - GIGAMALL`],
+            [""],
+            ["Tổng giao dịch:", totals.totalExchanges],
+            ["Tổng tiền mặt:", totals.totalPrice],
+            ["Tổng sản phẩm:", totals.totalItems],
+            [""],
+            ["CHI TIẾT THEO LOẠI XE"],
+            ["Loại xe", "Số lượng", "Thành tiền"]
+        ];
+
+        Object.values(totals.products).forEach(p => {
+            summaryData.push([p.name, p.quantity, p.price]);
+        });
+
+        const summaryWs = XLSX.utils.aoa_to_sheet(summaryData);
+        summaryWs["!cols"] = [{ width: 25 }, { width: 15 }, { width: 15 }];
+        XLSX.utils.book_append_sheet(wb, summaryWs, "Tổng hợp tháng");
+
+        // Sheet 2: Chi tiết theo ngày
+        const dailyData = [
+            ["DANH SÁCH THỐNG KÊ THEO NGÀY"],
+            [""],
+            ["Ngày", "Số lượng Xe Máy", "Số lượng Ô tô", "Doanh thu ngày"]
+        ];
+
+        Object.keys(totals.dailyStats).sort().forEach(date => {
+            const s = totals.dailyStats[date];
+            dailyData.push([date, s.moto, s.car, s.price]);
+        });
+
+        const dailyWs = XLSX.utils.aoa_to_sheet(dailyData);
+        dailyWs["!cols"] = [{ width: 15 }, { width: 15 }, { width: 15 }, { width: 15 }];
+        XLSX.utils.book_append_sheet(wb, dailyWs, "Chi tiết theo ngày");
+
+        // Save
+        XLSX.writeFile(wb, `bao-cao-thang-${yearMonth}.xlsx`);
+        showNotification(`Đã xuất báo cáo tháng ${month}/${year} thành công!`, "success");
+    } catch (error) {
+        console.error("Export Error:", error);
+        showNotification("Lỗi khi xuất file Excel!", "error");
+    }
 }
